@@ -12,6 +12,7 @@ import java.awt.event.ItemEvent.DESELECTED
 import java.awt.event.ItemEvent.SELECTED
 import javax.swing.*
 import javax.swing.JColorChooser.showDialog
+import kotlin.math.*
 
 
 class MainFrame : JFrame() {
@@ -78,33 +79,20 @@ class MainFrame : JFrame() {
 
         val cartesianPainter = CartesianPainter(plane)
 
-
-        val derivativePainter = FunctionPainter(plane)
+        val derivativePainter = ParamPainter(plane)
         derivativePainter.funColor = derivativeColorPanel.background
-//        fun f(x:Double):Double {
-//            var a = x
-//            return (a + 3) / (2 * a - 1)
-//        }
+        derivativePainter.functionX = {t:Double -> ln(t) *sin(t)}
+        derivativePainter.functionY = {t:Double -> cos(t)}
+
+
         val func = FunctionPainter(plane)
         func.function = {x:Double -> (x+3)/(2*x-1)}
         func.funColor = polynomColorPanel.background
 
-        val painters = mutableListOf<Painter>(cartesianPainter, func)
+        val painters = mutableListOf<Painter>(cartesianPainter)
         mainPanel = GraphicsPanel(painters).apply {
             background = Color.WHITE
         }
-        mainPanel.addMouseListener(object : MouseAdapter() {
-            override fun mouseClicked(e: MouseEvent?) {
-                with(plane) {
-                    if (e != null) {
-                        e.apply {
-//                            derivativePainter.function = dx::invoke
-                        }
-                        mainPanel.repaint()
-                    }
-                }
-            }
-        })
 
         cbGraphic.addItemListener(object : ItemListener {
             override fun itemStateChanged(e: ItemEvent?) {
@@ -113,6 +101,17 @@ class MainFrame : JFrame() {
                     mainPanel.repaint()
                 } else if (e?.stateChange == DESELECTED) {
                     painters.remove(func)
+                    mainPanel.repaint()
+                }
+            }
+        })
+        cbDerivative.addItemListener(object : ItemListener {
+            override fun itemStateChanged(e: ItemEvent?) {
+                if (e?.stateChange == SELECTED) {
+                    painters.add(derivativePainter)
+                    mainPanel.repaint()
+                } else if (e?.stateChange == DESELECTED) {
+                    painters.removeAt(painters.size - 1)
                     mainPanel.repaint()
                 }
             }

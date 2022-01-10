@@ -1,13 +1,15 @@
 package ru.karim.ui.painting
 
 import java.awt.*
-import kotlin.math.abs
 
-class FunctionPainter(private val plane: CartesianPlane) : Painter {
+class ParamPainter(private val plane: CartesianPlane) : Painter {
 
     var funColor: Color = Color.BLUE
-
-    var function: (Double) -> Double = Math::sin
+    val t_min = -5.0
+    val t_max = 5.0
+    var functionX: (Double) -> Double = Math::sin
+    var functionY: (Double) -> Double = Math::sin
+    val steps = 3000
 
     override fun paint(g: Graphics) {
         with(g as Graphics2D) {
@@ -20,18 +22,17 @@ class FunctionPainter(private val plane: CartesianPlane) : Painter {
                 RenderingHints.KEY_DITHERING to RenderingHints.VALUE_DITHER_ENABLE
             )
             setRenderingHints(rh)
+            val step = (t_max - t_min) / steps
             with(plane) {
-
-                    for (i in 0 until width) {
-                        if ((xScr2Crt(i) > 0.6)or(xScr2Crt(i) < 0.4))  {
-                            drawLine(
-                                i,
-                                yCrt2Scr(function(xScr2Crt(i))),
-                                i + 1,
-                                yCrt2Scr(function(xScr2Crt(i + 1)))
-                            )
-                        }
-                    }
+                for (i in 0 until steps) {
+                    val t = t_min + i * step
+                    drawLine(
+                        xCrt2Scr(functionX(t)),
+                        yCrt2Scr(functionY(t)),
+                        xCrt2Scr(functionX(t + step)),
+                        yCrt2Scr(functionY(t + step)),
+                    )
+                }
             }
         }
     }
