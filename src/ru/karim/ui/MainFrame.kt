@@ -78,18 +78,18 @@ class MainFrame : JFrame() {
 
         val cartesianPainter = CartesianPainter(plane)
 
-//        val pointsPainter = PointsPainter(plane)
-//        pointsPainter.pColor = pointsColorPanel.background
-
-        val polynomPainter = FunctionPainter(plane)
-        polynomPainter.function = plane.polynom
-        polynomPainter.funColor = polynomColorPanel.background
 
         val derivativePainter = FunctionPainter(plane)
         derivativePainter.funColor = derivativeColorPanel.background
+//        fun f(x:Double):Double {
+//            var a = x
+//            return (a + 3) / (2 * a - 1)
+//        }
+        val func = FunctionPainter(plane)
+        func.function = {x:Double -> (x+3)/(2*x-1)}
+        func.funColor = polynomColorPanel.background
 
-
-        val painters = mutableListOf<Painter>(cartesianPainter)
+        val painters = mutableListOf<Painter>(cartesianPainter, func)
         mainPanel = GraphicsPanel(painters).apply {
             background = Color.WHITE
         }
@@ -98,10 +98,6 @@ class MainFrame : JFrame() {
                 with(plane) {
                     if (e != null) {
                         e.apply {
-
-//                            val newPoint = pointsPainter.addPoint(xScr2Crt(x), yScr2Crt(y))
-//                            if (newPoint) addPoint(xScr2Crt(x) to yScr2Crt(y))
-//                            var dx = polynom.derivative()
 //                            derivativePainter.function = dx::invoke
                         }
                         mainPanel.repaint()
@@ -113,10 +109,10 @@ class MainFrame : JFrame() {
         cbGraphic.addItemListener(object : ItemListener {
             override fun itemStateChanged(e: ItemEvent?) {
                 if (e?.stateChange == SELECTED) {
-                    painters.add(polynomPainter)
+                    painters.add(func)
                     mainPanel.repaint()
                 } else if (e?.stateChange == DESELECTED) {
-                    painters.remove(polynomPainter)
+                    painters.remove(func)
                     mainPanel.repaint()
                 }
             }
@@ -127,7 +123,7 @@ class MainFrame : JFrame() {
                 if (e?.button == 1) {
                     val color = JColorChooser.showDialog(null, "Выберите цвет точек", polynomColorPanel.background)
                     polynomColorPanel.background = color
-                    polynomPainter.funColor = color
+                    func.funColor = color
                     mainPanel.repaint()
                 }
 
