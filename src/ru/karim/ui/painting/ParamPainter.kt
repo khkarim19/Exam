@@ -2,11 +2,11 @@ package ru.karim.ui.painting
 
 import java.awt.*
 
-class ParamPainter(private val plane: CartesianPlane) : Painter {
+class ParamPainter(private val plane: CartesianPlane, var t_min:Double,var t_max:Double) : Painter {
 
     var funColor: Color = Color.BLUE
-    val t_min = 0.01
-    val t_max = 5.0
+//    val t_min = 0.01
+//    val t_max = 5.0
     var functionX: (Double) -> Double = Math::sin
     var functionY: (Double) -> Double = Math::sin
     val steps = 3000

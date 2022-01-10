@@ -40,6 +40,8 @@ class MainFrame : JFrame() {
     val xMaxM: SpinnerNumberModel
     val yMinM: SpinnerNumberModel
     val yMaxM: SpinnerNumberModel
+    val tMin: JTextField
+    val tMax: JTextField
 
     init {
         minimumSize = minDim
@@ -53,7 +55,8 @@ class MainFrame : JFrame() {
         yMaxM = SpinnerNumberModel(5.0, -4.9, 100.0, 0.1)
         yMax = JSpinner(yMaxM)
         cbPoints = JCheckBox()
-
+        tMin = JTextField("0.001")
+        tMax = JTextField("5.0")
         cbGraphic = JCheckBox()
         cbParam = JCheckBox()
         polynomColorPanel = JPanel()
@@ -75,7 +78,10 @@ class MainFrame : JFrame() {
 
         val cartesianPainter = CartesianPainter(plane)
 
-        val paramPainter = ParamPainter(plane)
+        var t1 = tMin.getText().toDouble()
+        var t2 = tMax.getText().toDouble()
+
+        val paramPainter = ParamPainter(plane, t1, t2)
         paramPainter.funColor = paramColorPanel.background
         paramPainter.functionX = {t:Double -> ln(t) *sin(t)}
         paramPainter.functionY = {t:Double -> cos(t)}
@@ -124,7 +130,15 @@ class MainFrame : JFrame() {
 
             }
         })
+        tMin.addActionListener() {
+            paramPainter.t_min = tMin.text.toDouble()
+            mainPanel.repaint()
+        }
 
+        tMax.addActionListener() {
+            paramPainter.t_max = tMax.text.toDouble()
+            mainPanel.repaint()
+        }
         paramColorPanel.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
                 if (e?.button == 1) {
@@ -136,8 +150,6 @@ class MainFrame : JFrame() {
 
             }
         })
-
-
 
         mainPanel.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
@@ -184,6 +196,7 @@ class MainFrame : JFrame() {
             linkSize(YMin, yMin)
             linkSize(YMax, yMax)
             linkSize( polynomColorPanel, paramColorPanel, cbGraphic, cbParam)
+            linkSize(tMax,tMin)
 
 
             setHorizontalGroup(
@@ -228,6 +241,8 @@ class MainFrame : JFrame() {
                         createParallelGroup().addComponent(polynomColorPanel)
                             .addComponent(paramColorPanel)
                     )
+                    .addGap(10)
+                    .addGroup(createParallelGroup().addComponent(tMin).addComponent(tMax))
             )
             setVerticalGroup(
                 createParallelGroup(GroupLayout.Alignment.CENTER).addGroup(
@@ -274,6 +289,7 @@ class MainFrame : JFrame() {
                                 .addComponent(cbGraphic)
                                 .addComponent(set2)
                                 .addComponent(polynomColorPanel)
+                                .addComponent(tMin)
                         )
                         .addGap(2)
                         .addGroup(
@@ -281,6 +297,7 @@ class MainFrame : JFrame() {
                                 .addComponent(cbParam)
                                 .addComponent(set3)
                                 .addComponent(paramColorPanel)
+                                .addComponent(tMax)
                         )
                 )
             )
